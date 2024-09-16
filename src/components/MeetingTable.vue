@@ -1,0 +1,138 @@
+<template>
+  <div class="w-[15%] min-w-[300px] pb-10">
+    <table class="table-auto w-full border-2 border-app-blue mb-10">
+      <caption class="text-center mb-7">
+        <p class="text-app-blue text-2xl font-medium mb-1">{{ datatable[room_type] }}</p>
+        <p class="text-red-500 text-lg h-[40px]">{{ room_type === "room_seven" ? '社長来客以外使用不可' : '' }}</p>
+      </caption>
+      <thead>
+      <tr>
+        <th class="w-[20%] min-w-[20%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">時間</th>
+        <th class="w-[14%] min-w-[12%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">人数</th>
+        <th class="w-[50%] min-w-[50%] px-2 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">物件(内容)/来客</th>
+        <th class="w-[18%] min-w-[18%] px-2 text-app-blue border-b-2 py-2 border-app-blue font-semibold text-sm">担当</th>
+      </tr>
+      </thead>
+      <tbody class="text-xs">
+      <tr v-for="(item, idx) in times" :key="idx">
+        <td class="min-h-[40px] px-0.5 py-0.5 border-r-2 border-b-2 border-app-blue">
+          <Button class="bg-app-dark-blue w-full py-1" @click="open('meeting', item.time.substring(0, 5))">{{ item.time.substring(0, 5) }}</Button>
+        </td>
+        <td class="min-h-[40px] border-r-2 border-b-2 border-app-blue text-center">
+          {{ planContentMap[item.time.substring(0, 5)]?.people || '' }}
+        </td>
+        <td class="min-h-[40px] border-r-2 px-1 border-b-2 border-app-blue text-left">
+          <p class="break-words">{{ planContentMap[item.time.substring(0, 5)]?.content || '' }}</p>
+        </td>
+        <td class="min-h-[40px] border-b-2 border-app-blue text-center">
+          <p>{{ planContentMap[item.time.substring(0, 5)]?.in_charge || '' }}</p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <Button class="bg-app-dark-blue w-[80px] py-1 mb-4" @click="open('memo')">備考</Button>
+    <p class="text-xs pl-2">{{ memo }}</p>
+
+    <Dialog v-model="isDialogVisible">
+      <MeetingForm v-if="dialogType==='meeting'" v-model:dialog="isDialogVisible" :room_type="room_type" :time="selectedTime"/>
+      <MemoForm v-else v-model="tableMemoTextRef" v-model:dialog="isDialogVisible" :id="tableMemoIdRef" :room_type="room_type"/>
+    </Dialog>
+  </div>
+</template>
+<script setup lang="ts">
+import Button from "@/components/Button.vue";
+import Dialog from "@/components/Dialog.vue";
+import MemoForm from "@/components/MemoForm.vue";
+import MeetingForm from "@/components/MeetingForm.vue";
+
+import {computed, ref} from "vue";
+import {MeetingContent, PlanContent} from "@/types/MeetingContent.ts";
+
+import NEXT from "@/utilities/next.ts";
+import useStore from "@/composables/useStore.ts";
+
+
+const props = defineProps<{
+  room_type: string;
+}>();
+
+const {settings, times, memos, contents, date} = useStore();
+const dialogType = ref('');
+const selectedTime = ref('');
+const isDialogVisible = ref(false);
+const tableMemoIdRef = ref('');
+const tableMemoTextRef = ref('');
+const datatable = computed<any>(() => {
+  return NEXT(settings.value);
+});
+
+const data = computed(() => {
+  const grouped = groupBy(contents.value);
+  return grouped[props.room_type] || [];
+});
+
+const memo = computed(() => {
+  const d = memos.value.find(item => item.room_type === props.room_type);
+  return d?.memo || '';
+});
+
+// extract all plan_contents for the current room_type
+const planContentsForRoom = computed(() => {
+  const roomType = props.room_type;
+  const planContents: PlanContent[] = [];
+
+  data.value.forEach((mainItem) => {
+    mainItem.plan_contents.forEach((pc) => {
+      if (pc.room_type === roomType) {
+        planContents.push(pc);
+      }
+    });
+  });
+
+  return planContents;
+});
+
+// create a map from time to plan_content
+const planContentMap = computed(() => {
+  const map: { [time: string]: PlanContent } = {};
+
+  planContentsForRoom.value.forEach((pc) => {
+    // ensure time is in consistent format (e.g., "HH:mm")
+    const timeKey = pc.time.substring(0, 5); // "HH:mm"
+    map[timeKey] = pc;
+  });
+
+  return map;
+});
+
+
+function groupBy(data: MeetingContent[]): { [roomType: string]: MeetingContent[] } {
+  const result: { [roomType: string]: MeetingContent[] } = {};
+
+  data.forEach((mainItem) => {
+    const roomTypes = new Set(mainItem.plan_contents.map((pc) => pc.room_type));
+    roomTypes.forEach((roomType) => {
+      if (!result[roomType]) {
+        result[roomType] = [];
+      }
+      result[roomType].push(mainItem);
+    });
+  });
+
+  return result;
+}
+
+const open = (type: string, time: string | null = null) => {
+  dialogType.value = type;
+  isDialogVisible.value = true;
+  selectedTime.value = time || '';
+
+  if (type === 'memo') {
+    tableMemoIdRef.value = memos.value.find(item => item.room_type === props.room_type)?.id || '';
+    tableMemoTextRef.value = memo.value;
+    return;
+  }
+};
+
+</script>
