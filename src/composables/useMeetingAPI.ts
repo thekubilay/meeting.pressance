@@ -8,7 +8,7 @@ const useMeetingAPI = () => {
   const {times, contents}: any = useStore()
   const client: MeetingAPIClient = new MeetingAPIClient(API);
 
-  const SEARCH_TIMES = async (fd: FormData): Promise<void> => {
+  const SEARCH_TIMES = async (): Promise<void> => {
     const response: AxiosResponse = await client.search_times();
 
     if (response.status === 200) {
@@ -19,7 +19,7 @@ const useMeetingAPI = () => {
     return;
   }
 
-  const SEARCH_CONTENTS = async (fd: Object): Promise<void> => {
+  const SEARCH_CONTENTS = async (fd: object): Promise<void> => {
     const response: AxiosResponse = await client.search_contents(fd);
 
     if (response.status === 200) {
@@ -30,9 +30,31 @@ const useMeetingAPI = () => {
     return;
   }
 
+  const INSERT_MEETING = async (payload: object): Promise<void> => {
+    const response: AxiosResponse = await client.insert_meeting(payload);
+
+    if (response.status === 200) {
+      return;
+    }
+
+    return;
+  }
+
+  const UPDATE_MEETING = async (payload: object): Promise<void> => {
+    const response: AxiosResponse = await client.update_meeting(payload);
+
+    if (response.status === 200) {
+      return;
+    }
+
+    return;
+  }
+
   return {
     SEARCH_TIMES,
-    SEARCH_CONTENTS
+    SEARCH_CONTENTS,
+    INSERT_MEETING,
+    UPDATE_MEETING
   }
 }
 

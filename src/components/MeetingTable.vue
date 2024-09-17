@@ -51,6 +51,7 @@ import {MeetingContent, PlanContent} from "@/types/MeetingContent.ts";
 
 import NEXT from "@/utilities/next.ts";
 import useStore from "@/composables/useStore.ts";
+import useMeetingTableHelpers from "@/composables/useMeetingTableHelpers.ts";
 
 
 const props = defineProps<{
@@ -58,6 +59,7 @@ const props = defineProps<{
 }>();
 
 const {settings, times, memos, contents, date} = useStore();
+const {groupBy} = useMeetingTableHelpers();
 const dialogType = ref('');
 const selectedTime = ref('');
 const isDialogVisible = ref(false);
@@ -107,21 +109,6 @@ const planContentMap = computed(() => {
 });
 
 
-function groupBy(data: MeetingContent[]): { [roomType: string]: MeetingContent[] } {
-  const result: { [roomType: string]: MeetingContent[] } = {};
-
-  data.forEach((mainItem) => {
-    const roomTypes = new Set(mainItem.plan_contents.map((pc) => pc.room_type));
-    roomTypes.forEach((roomType) => {
-      if (!result[roomType]) {
-        result[roomType] = [];
-      }
-      result[roomType].push(mainItem);
-    });
-  });
-
-  return result;
-}
 
 const open = (type: string, time: string | null = null) => {
   dialogType.value = type;

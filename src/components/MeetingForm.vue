@@ -27,7 +27,8 @@
     </div>
     <div class="flex items-center mb-3">
       <p class="w-[100px] h-[32px] bg-app-light-blue text-sm text-white flex items-center justify-center">物件(内容)</p>
-      <input v-model="form.content" type="text" class="w-[calc(100%-117px)] block ml-4 border border-gray-600 h-[32px] px-2">
+      <input v-model="form.content" type="text"
+             class="w-[calc(100%-117px)] block ml-4 border border-gray-600 h-[32px] px-2">
     </div>
     <div class="flex items-center mb-3">
       <p class="w-[100px] h-[32px] bg-app-light-blue text-sm text-white flex items-center justify-center">担当者</p>
@@ -35,8 +36,8 @@
     </div>
 
     <div class="flex gap-6 w-[85%] mx-auto">
-      <Button class="bg-red-500 text-white w-1/2 py-2 mt-4" @click="submit">使用予定登録</Button>
-      <Button class="bg-app-dark-blue text-white w-1/2 py-2 mt-4" @click="del">予定を削除</Button>
+      <Button class="bg-red-500 text-white w-1/2 py-2 mt-4" @click="del">使用予定登録</Button>
+      <Button class="bg-app-dark-blue text-white w-1/2 py-2 mt-4" @click="submit">予定を削除</Button>
     </div>
   </div>
 </template>
@@ -44,9 +45,11 @@
 import Button from "@/components/Button.vue";
 
 import useStore from "@/composables/useStore.ts";
-import {computed, PropType, reactive, ref} from "vue";
+import {computed, onBeforeMount, onMounted, PropType, reactive, ref, watch} from "vue";
 import useMeetingAPI from "@/composables/useMeetingAPI.ts";
 import NEXT from "@/utilities/next.ts";
+import {all} from "axios";
+import useMeetingForm from "@/composables/useMeetingForm.ts";
 
 const dialog = defineModel("dialog", {type: Boolean, required: true});
 const props = defineProps({
@@ -59,80 +62,42 @@ const props = defineProps({
     required: true
   },
 })
+
+
+onBeforeMount(() => {
+  allTime.value = times.value.map(item => item.time.substring(0, 5))
+  allTime.value.push('18:30')
+})
+
 const {date, times} = useStore()
-const {} = useMeetingAPI()
-const form = reactive({
-  room_type: "room_two",
-  start_time: props.time,
-  finish_time: "",
-  people: "",
-  content: "",
-  in_charge: "",
-})
-const rooms = ref([
-  {label: "社長室", value: "room_seven"},
-  {label: "大会議室", value: "room_one"},
-  {label: "応接 1 (6人席)", value: "room_two"},
-  {label: "応接 2 (4人席)", value: "room_three"},
-  {label: "応接 3 (4人席)", value: "room_four"},
-  {label: "応接 4 (8人席)", value: "room_five"},
-  {label: "ブース (4人席)", value: "room_six"},
-])
-const start_times = computed(() => {
-  return times.value.map(item => item.time.substring(0, 5))
-})
-
-const finish_times = computed(() => {
-  const container = times.value.map(item => item.time.substring(0, 5))
-
-  // get index of start_time
-  const index = container.indexOf(props.time as string)
-  const result = container.splice(index, 19)
-  const ft = NEXT(result)
-
-  if (ft) {
-    form.finish_time = ft as string
-  } else {
-    form.finish_time = "18:30"
-  }
-
-  console.log(result)
-  return result.push("18:30")
-})
-
-const format = computed(() => {
-  const parts: any = new Intl.DateTimeFormat('ja-JP', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    weekday: 'long'
-  }).formatToParts(date.value);
-
-  const year = parts.find((part: any) => part.type === 'year').value;
-  const month = parts.find((part: any) => part.type === 'month').value;
-  const day = parts.find((part: any) => part.type === 'day').value;
-  const weekday = parts.find((part: any) => part.type === 'weekday').value;
-
-  return `${year}年${month}月${day}日 ${weekday}`;
-})
+const {SEARCH_CONTENTS, INSERT_MEETING, UPDATE_MEETING} = useMeetingAPI()
+const {rooms, form, format, start_times, finish_times} = useMeetingForm(String(props.time))
+const allTime = ref<string[]>([])
+const isoDate = computed(() => date.value.toISOString().substring(0, 10))
 
 const del = (): void => {
   dialog.value = false;
 }
 
 const submit = async (): Promise<void> => {
-  // const payload: any = {
-  //   created_at: date.value.toISOString().substring(0, 10),
-  //   room_type: props.room_type,
-  //   memo: modelValue.value
-  // }
-  //
-  // if (props.id) {
-  //   payload.id = props.id
-  // }
-  // await UPSERT(payload);
+  await INSERT_MEETING(form)
+  await SEARCH_CONTENTS({date: isoDate.value})
   dialog.value = false;
 };
+
+// watch for changes in start_time and finish_time and update time_table
+watch([() => form.start_time, () => form.finish_time], ([newStartTime, newFinishTime]) => {
+  form.time_table = [];
+
+  if (!newStartTime || !newFinishTime) return;
+
+  const stIdx = allTime.value.findIndex(item => item === newStartTime);
+  const ftIdx = allTime.value.findIndex(item => item === newFinishTime);
+
+  if (stIdx >= 0 && ftIdx >= 0) {
+    form.time_table = allTime.value.slice(stIdx, ftIdx + 1).map(item => item) as [];
+  }
+});
 
 
 // http://ik1-329-24605.vs.sakura.ne.jp:8004/api/meeting/insert_check.php

@@ -28,6 +28,25 @@ class MeetingAPIClient extends Base {
   }
 
 
+  async insert_meeting(payload:object): Promise<AxiosResponse> {
+
+    try {
+      return await axios.post(`${this.baseUrl}/meetings/insert_check.php`, payload, this.getConfigWithAuthToken());
+    } catch (error: unknown) {
+      return (error as AxiosError).response as AxiosResponse;
+    }
+  }
+
+  async update_meeting(payload: Object): Promise<AxiosResponse> {
+
+    try {
+      return await axios.post(`${this.baseUrl}/meetings/update.php`, payload, this.getConfigWithAuthToken());
+    } catch (error: unknown) {
+      return (error as AxiosError).response as AxiosResponse;
+    }
+  }
+
+
 }
 
 export default MeetingAPIClient;
