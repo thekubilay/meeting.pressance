@@ -16,15 +16,15 @@
       <tbody class="text-xs">
       <tr v-for="(item, idx) in times" :key="idx">
         <td class="min-h-[40px] px-0.5 py-0.5 border-r-2 border-b-2 border-app-blue">
-          <Button class="bg-app-dark-blue w-full py-1" @click="open('meeting', item.time.substring(0, 5))">{{ item.time.substring(0, 5) }}</Button>
+          <Button class="bg-app-dark-blue w-full py-1" @click="open('meeting', item.time)">{{ item.time.substring(0, 5) }}</Button>
         </td>
         <td class="min-h-[40px] border-r-2 border-b-2 border-app-blue text-center">
           {{ planContentMap[item.time.substring(0, 5)]?.people || '' }}
         </td>
-        <td class="min-h-[40px] border-r-2 px-1 border-b-2 border-app-blue text-left">
+        <td class="min-h-[40px] border-r-2 px-1 border-b-2 border-app-blue text-left leading-3">
           <p class="break-words">{{ planContentMap[item.time.substring(0, 5)]?.content || '' }}</p>
         </td>
-        <td class="min-h-[40px] border-b-2 border-app-blue text-center">
+        <td class="min-h-[40px] border-b-2 border-app-blue text-center leading-3">
           <p>{{ planContentMap[item.time.substring(0, 5)]?.in_charge || '' }}</p>
         </td>
       </tr>
@@ -35,7 +35,7 @@
     <p class="text-xs pl-2">{{ memo }}</p>
 
     <Dialog v-model="isDialogVisible">
-      <MeetingForm v-if="dialogType==='meeting'" v-model:dialog="isDialogVisible" :room_type="room_type" :time="selectedTime"/>
+      <MeetingForm v-if="dialogType==='meeting'" v-model:dialog="isDialogVisible" :data="getMeetingData()" :room_type="room_type" :meeting-id="meetingId" :content-id="contentId" :time="jikan"/>
       <MemoForm v-else v-model="tableMemoTextRef" v-model:dialog="isDialogVisible" :id="tableMemoIdRef" :room_type="room_type"/>
     </Dialog>
   </div>
@@ -60,8 +60,10 @@ const props = defineProps<{
 
 const {settings, times, memos, contents, date} = useStore();
 const {groupBy} = useMeetingTableHelpers();
+const meetingId = ref('');
+const contentId = ref('');
 const dialogType = ref('');
-const selectedTime = ref('');
+const jikan = ref('');
 const isDialogVisible = ref(false);
 const tableMemoIdRef = ref('');
 const tableMemoTextRef = ref('');
@@ -108,18 +110,51 @@ const planContentMap = computed(() => {
   return map;
 });
 
+const getMeetingData = () => {
+  return data.value.find(item => item.id === meetingId.value);
+};
 
+function getObjectByTime(arr: any, time: string) {
+  // Helper function to convert time strings to seconds since midnight
+  function timeToSeconds(timeStr: string) {
+    const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  const targetTime = timeToSeconds(time);
+
+  // Iterate over each object in the array
+  for (const obj of arr) {
+    const startTime = timeToSeconds(obj.start_time);
+    const finishTime = timeToSeconds(obj.finish_time);
+
+    // Check if the given time falls within the start and finish times
+    if (targetTime >= startTime && targetTime <= finishTime) {
+      return obj; // Return the matching object
+    }
+  }
+
+  // If no matching object is found, return null
+  return null;
+}
 
 const open = (type: string, time: string | null = null) => {
+  contentId.value = '';
+  meetingId.value = '';
+
   dialogType.value = type;
   isDialogVisible.value = true;
-  selectedTime.value = time || '';
 
-  if (type === 'memo') {
-    tableMemoIdRef.value = memos.value.find(item => item.room_type === props.room_type)?.id || '';
-    tableMemoTextRef.value = memo.value;
+  if (type === 'meeting') {
+    jikan.value = time?.substring(0, 5) || '';
+    meetingId.value = getObjectByTime(data.value, time as string)?.id || '';
+    contentId.value = planContentMap.value[time?.substring(0, 5) || '']?.id || '';
     return;
   }
+
+  tableMemoIdRef.value = memos.value.find(item => item.room_type === props.room_type)?.id || '';
+  tableMemoTextRef.value = memo.value;
+
 };
 
 </script>

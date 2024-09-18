@@ -1,8 +1,8 @@
 import {computed, reactive, ref} from "vue";
 import useStore from "./useStore.ts";
-import NEXT from "../utilities/next.ts";
+import NEXT from "@/utilities/next.ts";
 
-const useMeetingForm = (time: string) => {
+const useMeetingForm = (time: string, start_time: string) => {
   const {date, times} = useStore()
 
   const rooms = ref([
@@ -15,10 +15,22 @@ const useMeetingForm = (time: string) => {
     {label: "ブース (4人席)", value: "room_six"},
   ])
 
-  const form = reactive({
+  const form = reactive<{
+    id?: string,
+    time_table: any[],
+    room_type?: string,
+    start_time?: string,
+    finish_time: string,
+    people: string,
+    content: string,
+    content_id: string,
+    in_charge: string,
+    created_at: string,
+    poped?:string
+  }>({
     time_table: [],
-    room_type: "room_two",
-    start_time: time,
+    room_type: "",
+    start_time: "",
     finish_time: "",
     people: "",
     content: "",
@@ -51,7 +63,7 @@ const useMeetingForm = (time: string) => {
     const container: string[] = times.value.map(item => item.time.substring(0, 5))
 
     // get index of start_time
-    const index: number = container.indexOf(time as string)
+    const index: number = container.indexOf(start_time.substring(0,5))
     const result: string[] = container.splice(index + 1, 19)
     const ft: string | null = NEXT(result)
 

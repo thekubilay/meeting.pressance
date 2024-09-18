@@ -46,6 +46,15 @@ class MeetingAPIClient extends Base {
     }
   }
 
+  async delete_meeting(payload: Object): Promise<AxiosResponse> {
+
+    try {
+      return await axios.post(`${this.baseUrl}/meetings/delete.php`, payload, this.getConfigWithAuthToken());
+    } catch (error: unknown) {
+      return (error as AxiosError).response as AxiosResponse;
+    }
+  }
+
 
 }
 

@@ -179,6 +179,7 @@ watch(memos, val => {
 }
 
 input.dp__pointer {
+  background: #f2f2f2;
   border: none;
   width: 322px;
   text-align: center;

@@ -50,11 +50,22 @@ const useMeetingAPI = () => {
     return;
   }
 
+  const DELETE_MEETING = async (payload: object): Promise<void> => {
+    const response: AxiosResponse = await client.delete_meeting(payload);
+
+    if (response.status === 200) {
+      return;
+    }
+
+    return;
+  }
+
   return {
     SEARCH_TIMES,
     SEARCH_CONTENTS,
     INSERT_MEETING,
-    UPDATE_MEETING
+    UPDATE_MEETING,
+    DELETE_MEETING,
   }
 }
 
