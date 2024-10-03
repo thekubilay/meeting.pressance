@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[15%] min-w-[300px] pb-10">
+  <div class="w-[15%] min-w-[300px] sp:min-w-[224px] pb-10">
     <table class="table-auto w-full border-2 border-app-blue mb-10">
       <caption class="text-center mb-7">
         <p class="text-app-blue text-2xl font-medium mb-1">{{ datatable[room_type] }}</p>
@@ -7,16 +7,16 @@
       </caption>
       <thead>
       <tr>
-        <th class="w-[20%] min-w-[20%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">時間</th>
-        <th class="w-[14%] min-w-[12%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">人数</th>
-        <th class="w-[50%] min-w-[50%] px-2 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm">物件(内容)/来客</th>
-        <th class="w-[18%] min-w-[18%] px-2 text-app-blue border-b-2 py-2 border-app-blue font-semibold text-sm">担当</th>
+        <th class="w-[20%] min-w-[20%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm sp:text-xs">時間</th>
+        <th class="w-[14%] min-w-[12%] px-1 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm sp:text-xs">人数</th>
+        <th class="w-[50%] min-w-[50%] px-2 text-app-blue border-r-2 border-b-2 py-2 border-app-blue font-semibold text-sm sp:text-xs">物件(内容)/来客</th>
+        <th class="w-[18%] min-w-[18%] px-2 text-app-blue border-b-2 py-2 border-app-blue font-semibold text-sm sp:text-xs">担当</th>
       </tr>
       </thead>
       <tbody class="text-xs">
       <tr v-for="(item, idx) in times" :key="idx">
         <td class="min-h-[40px] px-0.5 py-0.5 border-r-2 border-b-2 border-app-blue">
-          <Button class="bg-app-dark-blue w-full py-1" @click="open('meeting', item.time)">{{ item.time.substring(0, 5) }}</Button>
+          <Button class="bg-app-dark-blue w-full py-1 sp:text-xs" @click="open('meeting', item.time)">{{ item.time.substring(0, 5) }}</Button>
         </td>
         <td class="min-h-[40px] border-r-2 border-b-2 border-app-blue text-center">
           {{ planContentMap[item.time.substring(0, 5)]?.people || '' }}

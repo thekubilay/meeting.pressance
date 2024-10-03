@@ -23,6 +23,9 @@ const useMeetingAPI = () => {
     const response: AxiosResponse = await client.search_contents(fd);
 
     if (response.status === 200) {
+      const filteredData = response.data.filter((item: any) => item.plan_contents && item.plan_contents.length > 0);
+
+      console.log(filteredData)
       contents.value = response.data
       return;
     }

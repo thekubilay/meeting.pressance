@@ -35,7 +35,7 @@
       <input v-model="form.in_charge" type="text" class="w-[100px] block ml-4  h-[32px] px-2  box-border border-2 border-t-zinc-600 border-l-zinc-600 border-r-zinc-800 border-b-zinc-800 border-inset">
     </div>
 
-    <p class="leading-4 text-red-500 font-bold text-md text-center py-2">
+    <p v-if="props.meetingId?.length" class="leading-4 text-red-500 font-bold text-md text-center py-2">
       すでに予約が入っています。<br>
       登録すると予約は上書きされます。
     </p>

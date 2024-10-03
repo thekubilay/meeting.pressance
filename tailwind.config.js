@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'sp': {'max': '523px'},
+        'pc': {'min': '524px'},
+      },
       borderColor: {
         "app-blue": "#00008b",
       },

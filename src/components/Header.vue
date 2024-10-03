@@ -1,38 +1,38 @@
 <template>
-  <header class="flex justify-between items-center px-16 py-14">
-    <div class="flex items-center justify-between gap-10 w-1/2">
-      <h1 class="w-1/2 text-app-blue font-bold text-3xl">応接予約表</h1>
+  <header class="flex justify-between items-center sp:px-2 px-16 py-14">
+    <div class="flex items-center justify-between sp:gap-0 gap-10 w-1/2">
+      <h1 class="w-1/2 text-app-blue font-bold sp:text-lg text-3xl">応接予約表</h1>
       <ul class="w-1/2">
         <li class="flex mb-2.5">
-          <Button class="min-w-[50px] py-1 text-sm bg-app-blue" @click="open('dengon1')">伝言</Button>
-          <span class="px-4">{{ dengons.dengon1 }}</span>
+          <Button class="min-w-[50px] py-1 sp:text-xs text-sm bg-app-blue" @click="open('dengon1')">伝言</Button>
+          <span class="px-4 sp:text-xs">{{ dengons.dengon1 }}</span>
         </li>
         <li class="flex mb-2.5">
-          <Button class="min-w-[50px] py-1 text-sm bg-app-blue" @click="open('dengon2')">伝言</Button>
-          <span class="px-4">{{ dengons.dengon2 }}</span>
+          <Button class="min-w-[50px] py-1 sp:text-xs text-sm bg-app-blue" @click="open('dengon2')">伝言</Button>
+          <span class="px-4 sp:text-xs">{{ dengons.dengon2 }}</span>
         </li>
         <li class="flex mb-2.5">
-          <Button class="min-w-[50px] py-1 text-sm bg-app-blue" @click="open('dengon3')">伝言</Button>
-          <span class="px-4">{{ dengons.dengon3 }}</span>
+          <Button class="min-w-[50px] py-1 sp:text-xs text-sm bg-app-blue" @click="open('dengon3')">伝言</Button>
+          <span class="px-4 sp:text-xs">{{ dengons.dengon3 }}</span>
         </li>
         <li class="flex">
-          <Button class="min-w-[50px] py-1 text-sm bg-app-blue" @click="open('dengon4')">伝言</Button>
-          <span class="px-4">{{ dengons.dengon4 }}</span>
+          <Button class="min-w-[50px] py-1 sp:text-xs text-sm bg-app-blue" @click="open('dengon4')">伝言</Button>
+          <span class="px-4 sp:text-xs">{{ dengons.dengon4 }}</span>
         </li>
       </ul>
     </div>
     <div class="w-1/2 flex justify-end">
-      <div class="relative flex flex-col items-center gap-6">
-        <div class="flex gap-4">
+      <div class="relative flex flex-col items-center sp:gap-2 gap-6">
+        <div class="flex gap-4 sp:gap-2">
           <VueDatePicker v-model="setDate" auto-apply :format-locale="ja" :format="format" :enable-time-picker="false" class="w-[322px]"/>
-          <Button class="w-[70px] py-1 text-sm bg-app-dark-blue" @click="update">更新</Button>
+          <Button class="sp:w-[40px] w-[70px] sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="update">更新</Button>
         </div>
-        <div class="flex gap-4">
-          <Button class="px-3 py-1 text-sm bg-app-dark-blue" @click="goToPrevWeek">< 先週</Button>
-          <Button class="px-3 py-1 text-sm bg-app-dark-blue" @click="goToPrevDay">< 前日</Button>
-          <Button class="px-3 py-1 text-sm bg-app-dark-blue" @click="goToToday">本日の予約</Button>
-          <Button class="px-3 py-1 text-sm bg-app-dark-blue" @click="goToNextDay">翌日 ></Button>
-          <Button class="px-3 py-1 text-sm bg-app-dark-blue" @click="goToNextWeek">来週 ></Button>
+        <div class="flex gap-4 sp:gap-0">
+          <Button class="sp:px-1 px-3 sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="goToPrevWeek">< 先週</Button>
+          <Button class="sp:px-1 px-3 sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="goToPrevDay">< 前日</Button>
+          <Button class="sp:px-1 px-3 sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="goToToday">本日の予約</Button>
+          <Button class="sp:px-1 px-3 sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="goToNextDay">翌日 ></Button>
+          <Button class="sp:px-1 px-3 sp:py-0.5 py-1 sp:text-xs text-sm bg-app-dark-blue" @click="goToNextWeek">来週 ></Button>
         </div>
       </div>
     </div>
@@ -185,5 +185,21 @@ input.dp__pointer {
   text-align: center;
   font-size: 24px;
   color: #00008b;
+}
+
+@media screen and (max-width: 524px) {
+  .dp__input {
+    width: 100%;
+    padding: 0;
+  }
+
+  .dp__input_icons {
+    display: none;
+  }
+
+  input.dp__pointer {
+    width: 100%;
+    font-size: 14px;
+  }
 }
 </style>

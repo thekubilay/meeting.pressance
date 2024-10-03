@@ -17,6 +17,14 @@ class SettingAPIClient extends Base {
     }
   }
 
+  async update(payload: object): Promise<AxiosResponse> {
+    try {
+      return await axios.post(`${this.baseUrl}/settings/insert-meeting.php`, payload, this.getConfigWithAuthToken());
+    } catch (error: unknown) {
+      return (error as AxiosError).response as AxiosResponse;
+    }
+  }
+
 }
 
 export default SettingAPIClient;
