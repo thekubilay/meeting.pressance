@@ -25,8 +25,8 @@ const useMeetingAPI = () => {
     if (response.status === 200) {
       const filteredData = response.data.filter((item: any) => item.plan_contents && item.plan_contents.length > 0);
 
-      console.log(filteredData)
-      contents.value = response.data
+      // console.log(filteredData)
+      contents.value = filteredData
       return;
     }
 
