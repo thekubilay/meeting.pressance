@@ -115,7 +115,7 @@ const del = async (): Promise<void> => {
 const submit = async (): Promise<void> => {
   if (props.meetingId?.length) {
     delete form.start_time
-    form.poped = form.finish_time
+    form.poped = form.time_table[form.time_table.length - 1]
     await UPDATE_MEETING(form)
   } else {
     await INSERT_MEETING(form)
