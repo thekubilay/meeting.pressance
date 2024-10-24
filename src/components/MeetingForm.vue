@@ -118,6 +118,7 @@ const submit = async (): Promise<void> => {
     form.poped = form.time_table[form.time_table.length - 1]
     await UPDATE_MEETING(form)
   } else {
+    form.finish_time = form.time_table[form.time_table.length - 1]
     await INSERT_MEETING(form)
   }
 
@@ -140,6 +141,23 @@ watch([() => form.start_time, () => form.finish_time], ([newStartTime, newFinish
   }
 });
 
+const asd = {
+  "time_table": [
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30"
+  ],
+  "room_type": "room_one",
+  "start_time": "13:30",
+  "finish_time": "16:00",
+  "people": "2",
+  "content": "2",
+  "content_id": "",
+  "in_charge": "2",
+  "created_at": "2024-10-15"
+}
 
 const update = {
   "time_table": ["10:00"],
