@@ -30,5 +30,10 @@
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vue-tsc": "^2.0.29"
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "last 2 versions",
+    "not dead"
+  ]
 }
